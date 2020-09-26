@@ -5,6 +5,21 @@ jQuery(function($){
 
     var Config = {}
 
+    function dedupPloys(list) {
+        return list.reduce((previousList, nextItem) => {
+            const previouslyFound = previousList.find(i => nextItem.value.trim().toLowerCase() === i.value.trim().toLowerCase())
+            if (nextItem && previouslyFound) {
+                if (previouslyFound.playerId === 'answer') {
+                    return previousList
+                } else {
+                    return [...previousList.filter(p => p !== previouslyFound), nextItem]
+                }
+                return 
+            } else {
+                return [...previousList, nextItem]
+            }
+        }, [])
+    }
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
@@ -67,7 +82,9 @@ jQuery(function($){
             //
             // So on the 'host' browser window, the App.Host.updateWiatingScreen function is called.
             // And on the player's browser, App.Player.updateWaitingScreen is called.
-            App[App.myRole].updateWaitingScreen(data);
+            if (App[App.myRole]) {
+                App[App.myRole].updateWaitingScreen(data);
+            }
         },
 
         /**
@@ -204,6 +221,8 @@ jQuery(function($){
             App.$playerAnswerTemplate = $('#player-answer-template').html();
             App.$playerVoteTemplate = $('#player-vote-template').html();
             App.$restartScreenTemplate = $('#restart-screen-template').html();
+            App.$nextButtonTemplate = $('#next-button-template').html();
+            App.$ocrTemplate = $('#ocr-svg-template').html();
         },
 
         /**
@@ -212,14 +231,17 @@ jQuery(function($){
         bindEvents: function () {
             // Host
             App.$doc.on('click', '#btnCreateGame', App.Host.onCreateClick);
+            App.$doc.on('click', '#nextButton', App.Host.hostNextRoundClicked);
 
             // Player
             App.$doc.on('click', '#btnJoinGame', App.Player.onJoinClick);
-            App.$doc.on('click', '#btnStart',App.Player.onPlayerStartClick);
-            App.$doc.on('click', '#btnSendPloy',App.Player.onPlayerSendPloyClick);
+            App.$doc.on('click', '#btnStart', App.Player.onPlayerStartClick);
+            App.$doc.on('click', '#btnSendPloy', App.Player.onPlayerSendPloyClick);
+            App.$doc.on('change', '#inputPloy', App.Player.onPlayerPloyTyped);
             // App.$doc.on('click', '.btnAnswer',App.Player.onPlayerAnswerClick);
             App.$doc.on('click', '#btnPlayerRestart', App.Player.onPlayerRestart);
             App.$doc.on('click', '#btnPlayerLaunchGame', App.Player.onPlayerLaunchGameClick);
+            
         },
 
         /* *************************************
@@ -304,22 +326,24 @@ jQuery(function($){
 
                 // Show the gameId / room id on screen
                 $('#spanNewGameCode').text(App.gameId);
+
+                $('#ocrSvg').html(App.$ocrTemplate);
             },
 
             showTemplateNewGame : function() {
                 App.$gameArea.html(App.$templateNewGame);
 
-                var $flags = $('#flags');
-                Object.keys(Config.languages).forEach(code => {
-                    var $flag = $('<img src="images/flags/' + Config.languages[code].flag_path + '">');
-                    $flag.addClass('flag');
-                    $flag.click(function(){
-                        App.Host.selectFlag(this, code);
-                    });
-                    $flags.append($flag);
-                });
+                // var $flags = $('#flags');
+                // Object.keys(Config.languages).forEach(code => {
+                //     var $flag = $('<img src="images/flags/' + Config.languages[code].flag_path + '">');
+                //     $flag.addClass('flag');
+                //     $flag.click(function(){
+                //         App.Host.selectFlag(this, code);
+                //     });
+                //     $flags.append($flag);
+                // });
 
-                $('.flag')[0].click();
+                // $('.flag')[0].click();
             },
 
             selectFlag : function($flag, code) {
@@ -434,11 +458,22 @@ jQuery(function($){
                         }
 
                         // Notify the server to start the next round.
-                        setTimeout(function(){
-                            IO.socket.emit('hostNextRound', data);
-                        }, Config.answerDisplayCountdownDuration * 1000);
+                        if (Config.answerDisplayCountdownDuration > 0) {
+                            setTimeout(function(){
+                                IO.socket.emit('hostNextRound', data);
+                            }, Config.answerDisplayCountdownDuration * 1000);
+                        }
                     }
                 }
+            },
+
+            hostNextRoundClicked: function() {
+                $('#nextButton').remove();
+                const data = {
+                    gameId : App.gameId,
+                    round : App.currentRound
+                }
+                IO.socket.emit('hostNextRound', data);
             },
 
             displayAnswers : function() {
@@ -451,12 +486,17 @@ jQuery(function($){
                     // console.log($curPlayerVote);
                     // console.log($curPlayerVote.find('.playerVote'));
 
-                    if(answer.playerId == "answer"){
+                    if (answer.value.toLowerCase() === App.Host.currentCorrectAnswer.toLowerCase()) {
                         $curPlayerVote.find(".bonus").html("+" + Config.goodAnswer);
                         $curPlayerVote.find(".malus").remove();
                     } else {
-                        $curPlayerVote.find(".bonus").remove();
-                        $curPlayerVote.find(".malus").html("+" + Config.ployAnswer);
+                        if (App.Host.players[playerAnsweringId].ploy.toLowerCase() === answer.value.toLowerCase()) {
+                            $curPlayerVote.find(".bonus").remove();
+                            $curPlayerVote.find(".malus").remove();
+                        } else {
+                            $curPlayerVote.find(".bonus").remove();
+                            $curPlayerVote.find(".malus").html("+" + Config.ployAnswer);
+                        }
                     }
 
                     var $curPlayerAnswer;
@@ -467,21 +507,28 @@ jQuery(function($){
                     var $playersVotesArea = $curPlayerAnswer.find('.playersVotesArea');
                     $playersVotesArea.append($curPlayerVote);
                 });
+
+                if (Config.answerDisplayCountdownDuration <= 0) {
+                    var $nextButton = $(App.$nextButtonTemplate);
+                    $nextButton.insertBefore("#gameArea");
+                }
             },
 
             updateScore : function() {
                 Object.keys(App.Host.answers).forEach(function(playerAnsweringId){
                     var answer = App.Host.answers[playerAnsweringId];
-                    if(answer.playerId == 'answer'){
+                    if (answer.value.toLowerCase() === App.Host.currentCorrectAnswer.toLowerCase()) {
                         var $pScore = App.Host.players[playerAnsweringId].$playerScore;
                         
                         App.Host.players[playerAnsweringId].playerScore += Config.goodAnswer;
                         $pScore.text( App.Host.players[playerAnsweringId].playerScore );
                     } else {
-                        var $pScore = App.Host.players[answer.playerId].$playerScore;
-                        
-                        App.Host.players[answer.playerId].playerScore += Config.ployAnswer;
-                        $pScore.text( App.Host.players[answer.playerId].playerScore );
+                        if (!(App.Host.players[playerAnsweringId].ploy.toLowerCase() === answer.value.toLowerCase())) {
+                            var $pScore = App.Host.players[answer.playerId].$playerScore;
+                            
+                            App.Host.players[answer.playerId].playerScore += Config.ployAnswer;
+                            $pScore.text( App.Host.players[answer.playerId].playerScore );
+                        }
                     }
                 });
             },
@@ -545,8 +592,8 @@ jQuery(function($){
              */
             ploysList : function(data) {
                 console.log(data.list);
-
-                $.each(data.list, function(){
+                const dedupList = dedupPloys(data.list)
+                $.each(dedupList, function(){
                     /*
                     var $answer = $('<div>')
                         .addClass('answer')
@@ -562,10 +609,11 @@ jQuery(function($){
                     console.log(this.playerId);
                     console.log(this);
 
-                    if(!App.Host.players[this.playerId])
+                    if (!App.Host.players[this.playerId]) {
                         App.Host.$trueAnswer = $curPlayerAnswer;
-                    else
+                    } else {
                         App.Host.players[this.playerId].$playerAnswer = $curPlayerAnswer;
+                    }
                 });
                 
                 var nbColumns;
@@ -679,21 +727,36 @@ jQuery(function($){
                 IO.socket.emit('playerLaunchGameClick', App.gameId);
             },
 
+            onPlayerPloyTyped: function() {
+                const data = {
+                    gameId: App.gameId,
+                    playerId: App.mySocketId,
+                    currentPloy: $('#inputPloy').val().trim(),
+                    round: App.currentRound,
+                    playerName: App.Player.myName
+                };
+                IO.socket.emit('playerTyping', data);
+            },
+
             /**
              * The player entered his ploy
              * and clicked validate.
              */
             onPlayerSendPloyClick: function() {
                 // console.log('Player clicked "Start"');
-
+                
                 // collect data to send to the server
                 var data = {
                     gameId: App.gameId,
                     playerId: App.mySocketId,
-                    ploy: $('#inputPloy').val(),
+                    ploy: $('#inputPloy').val().trim(),
                     round: App.currentRound
                 };
 
+                if (!data.ploy || data.ploy.length === 0) {
+                    alert('Please add your answer. It cannot be empty.');
+                    return;
+                }
                 // Send the player info and written ploy to the server so
                 // the host can display the ploys.
                 IO.socket.emit('playerSendPloy', data);
@@ -783,9 +846,10 @@ jQuery(function($){
                 // Create an unordered list element
                 var $list = $('<ul/>').attr('id','ulAnswers');
 
+                const dedupList = dedupPloys(data.list)
                 // Insert a list item for each word in the word list
                 // received from the server.
-                $.each(data.list, function(){
+                $.each(dedupList, function(){
                     
                     var $button = $('<button/>')
                         .addClass('btnAnswer')
@@ -793,8 +857,8 @@ jQuery(function($){
                         .val(this.value)
                         .html(this.value.toUpperCase())
                     console.log("temp", App.mySocketId, this.playerId, App.mySocketId == this.playerId)
-                    if(App.mySocketId == this.playerId)
-                        $button.attr('disabled', 'disabled');
+                    // if(App.mySocketId == this.playerId)
+                    //     $button.attr('disabled', 'disabled');
                     var $li = $('<li/>');
                     $li.append($button);
                     $list.append($li);

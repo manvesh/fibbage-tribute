@@ -3,6 +3,8 @@ var gameSocket;
 
 const request = require("request");
 var Config = require('./public/config.json');
+// var GameRounds = require("./game.json").rounds;
+var GameRounds = require("./testgame.json").rounds;
 
 const NODE_ENV = process.env.NODE_ENV || 'dev';
 
@@ -30,6 +32,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('playerJoinGame', playerJoinGame);
     gameSocket.on('playerLaunchGameClick', playerLaunchGameClick);
     gameSocket.on('playerAnswer', playerAnswer);
+    gameSocket.on('playerTyping', playerTyping);
     gameSocket.on('playerSendPloy', playerSendPloy);
     gameSocket.on('playerRestart', playerRestart);
 }
@@ -45,7 +48,7 @@ exports.initGame = function(sio, socket){
  */
 function hostCreateNewGame() {
     // Create a unique Socket.IO Room
-    var thisGameId = ( Math.random() * 100000 ) | 0;
+    var thisGameId = ( Math.random() * 10 ) | 0;
 
     // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
     this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
@@ -63,19 +66,10 @@ function hostPrepareGame(data) {
 
     data.mySocketId = sock.id;
 
-    const domain = NODE_ENV == 'prod' ? 'https://fibbage-tribute-questions.herokuapp.com' : 'http://localhost:3000'
-    const url = domain + '/question/random/' + Config.nbRounds + '?lan=' + data.language;
-    console.log(url);
-    request.get(url, (error, response, body) => {
-        if(error) {
-            return console.dir(error);
-        }
-        questions = JSON.parse(body);
-        console.log("Questions :", questions);
+    questions = GameRounds;
 
-        //console.log("All Players Present. Preparing game...");
-        io.sockets.in(data.gameId).emit('beginNewGame', data);
-    });
+    //console.log("All Players Present. Preparing game...");
+    io.sockets.in(data.gameId).emit('beginNewGame', data);
 }
 
 /*
@@ -169,11 +163,16 @@ function playerLaunchGameClick(gameId){
  * @param data gameId
  */
 function playerSendPloy(data) {
-    // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
+    console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
 
     // The player's ploy is attached to the data object.  \
     // Emit an event with the ploy so it can be saved by the 'Host'
     io.sockets.in(data.gameId).emit('hostSavePloy', data);
+}
+
+function playerTyping(data) {
+    // console.log('at: ' + new Date().toISOString() + 'Data: ', data)
+    console.log('at: ' + new Date().toISOString() + ' Player ID: ' + data.playerId + ' typed ' + data.currentPloy)
 }
 
 /**
@@ -181,7 +180,7 @@ function playerSendPloy(data) {
  * @param data gameId
  */
 function playerAnswer(data) {
-    // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
+    console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
 
     // The player's answer is attached to the data object.  \
     // Emit an event with the answer so it can be checked by the 'Host'

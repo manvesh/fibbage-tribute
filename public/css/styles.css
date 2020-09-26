@@ -4,21 +4,45 @@
   Mid Green : #A8FF56
        Lite : #ECFFE0
 Dark Purple : #A22FB0
-
+Baby Blue   : #78BDE2
+Baby Pink   : #ED687C rgb(233, 9, 188)
 */
 
 :root {
     --answer-button-margin: 10px;
 }
 
-html, body {
-    background-color: #78BD4C;
+body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
+    background: linear-gradient(30deg, #78BDE2, #CB5668);
 }
 
+@-webkit-keyframes backgroundAnimate {
+    0%{background-position:94% 0%}
+    50%{background-position:7% 100%}
+    100%{background-position:94% 0%}
+}
+@-moz-keyframes backgroundAnimate {
+    0%{background-position:94% 0%}
+    50%{background-position:7% 100%}
+    100%{background-position:94% 0%}
+}
+@keyframes backgroundAnimate {
+    0%{background-position:94% 0%}
+    50%{background-position:7% 100%}
+    100%{background-position:94% 0%}
+}
+.background {
+    background: linear-gradient(30deg, #78BDE2, #CB5668);
+    background-size: 500% 500%;
+
+    -webkit-animation: backgroundAnimate 5s ease infinite;
+    -moz-animation: backgroundAnimate 5s ease infinite;
+    animation: backgroundAnimate 5s ease infinite;
+}
 
 
 /* ******************************
@@ -35,7 +59,7 @@ html, body {
     height: 100%;
     margin-bottom: 0;
     color: #ECFFE0;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     font-weight: 700;
     font-size: 2em;
     line-height: 1.2;
@@ -50,6 +74,7 @@ html, body {
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+    box-shadow: #22A430 0px 0px 2px;
 }
 
 .btn:focus {
@@ -62,6 +87,7 @@ html, body {
 .btn:focus {
     color: #AE37B2;
     text-decoration: none;
+    box-shadow: #22A430 0px 0px 5px;
 }
 
 .btn:active,
@@ -93,7 +119,7 @@ html, body {
 }
 
 .titleWrapper {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     font-weight: 400;
     position: absolute;
     height: 50%;
@@ -111,7 +137,7 @@ html, body {
 .title {
     margin: 0px auto;
     text-align: center;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     color: #ECFFE0;
     font-weight: 300;
 
@@ -130,7 +156,7 @@ html, body {
    ****************************** */
 
 .createGameWrapper, .joinGameWrapper, .gameOver {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     margin: 0 auto;
     text-align: center;
 }
@@ -143,8 +169,9 @@ html, body {
 }
 
 .createGameWrapper{
-    color: #AE37B2;
+    color: #3EA3AA;
     font-weight: 300;
+    text-shadow: aquamarine 0px 1px 1px;
 }
 
 .info label {
@@ -154,15 +181,15 @@ html, body {
 .info input {
     text-align: center;
     padding: 10px;
-    width: 200px;
     height: 60px;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     color: #A22FB0;
     font-weight: 300;
     font-size: 54px;
     border: 1px dotted white;
     border-radius: 10px;
-    background: transparent;
+    background: #ffffff77;
+    width: calc(100% - 100px);
 }
 
 .info input#inputPlayerName {
@@ -267,7 +294,7 @@ li:not(:last-child) .btnAnswer {
 
 /* Absolute Centering: http://coding.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/ */
 #wordArea {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     font-weight: 400;
     flex-grow: 1;
     display: flex;
@@ -275,6 +302,7 @@ li:not(:last-child) .btnAnswer {
     flex-direction: column;
     width: 90%;
     margin: auto;
+    text-shadow: white 0px 2px 2px;
 }
 
 #hostWord {
@@ -283,10 +311,44 @@ li:not(:last-child) .btnAnswer {
     text-align: center;
 }
 
+
+.small-title {
+    font-family: 'Ranchers', sans-serif;
+    font-weight: 400;
+    width: 96%;
+    margin: auto;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 20px;
+    color: coral;
+    /* background: linear-gradient(coral, lightblue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; */
+    text-shadow: black 1px 0 2px
+}
+
+@media screen and (min-width: 720px) {
+    .small-title {
+        font-size: 40px;
+    }
+}
+
+
+#ocrSvg {
+    max-width: 40%;
+    max-height: 40%;
+    margin: -110px auto -0 auto;
+}
+
 #hostWord h2, #btnPlayerRestart h3 {
     font-size: 161px;
     line-height: 1em;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     font-weight: 400;
     margin: 0;
     padding: 0;
@@ -302,7 +364,7 @@ li:not(:last-child) .btnAnswer {
 .playerInfo {
     padding: 0;
     margin: 0;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     font-weight: 400;
     display: flex;
 }
@@ -340,7 +402,7 @@ li:not(:last-child) .btnAnswer {
     padding: 10px;
     display: grid;
     grid-gap: 10px;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Ranchers', sans-serif;
     padding: 10px;
     text-align: center;
     font-weight: 400;

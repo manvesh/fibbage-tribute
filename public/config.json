@@ -1,7 +1,7 @@
 {
     "nbPlayers": 2,
     "pregameCountdownDuration": 5,
-    "answerDisplayCountdownDuration": 10,
+    "answerDisplayCountdownDuration": 0,
     "goodAnswer": 10,
     "ployAnswer": 5,
     "badAnswer": -3,
@@ -9,10 +9,6 @@
         "en": {
             "name": "English",
             "flag_path": "united-kingdom.png"
-        },
-        "fr": {
-            "name": "Français",
-            "flag_path": "france.png"
         }
     },
     "nbRounds": 10
