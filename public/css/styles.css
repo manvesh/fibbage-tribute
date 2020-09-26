@@ -342,7 +342,7 @@ li:not(:last-child) .btnAnswer {
 #ocrSvg {
     max-width: 40%;
     max-height: 40%;
-    margin: -110px auto -0 auto;
+    margin: -80px auto -0 auto;
 }
 
 #hostWord h2, #btnPlayerRestart h3 {
