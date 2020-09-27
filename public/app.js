@@ -374,6 +374,13 @@ jQuery(function($){
                 App.Host.numPlayersInRoom += 1;
             },
 
+            deletePlayerFromGame: function(playername) {
+                const playerId = Object.keys(App.Host.players).filter(id => App.Host.players[id] && App.Host.players[id].playerName === playername);
+                if (App.Host.players[playerId]) {
+                    delete App.Host.players[playerId]
+                }
+            },
+
             launchGame : function(data) {
                 IO.socket.emit('hostRoomFull', {gameId: App.gameId, language: App.language});
             },

@@ -1,0 +1,58 @@
+{
+  "rounds": [
+    {
+      "round_name": "Name the toy?",
+      "question": "Name this toy - Toy that you place in your baby's bathwater to determine whether it is too hot, presumably because you do not have the hands capable of fulfilling this function.",
+      "solution": "Temperature Test Duck",
+      "answer": ""
+    },
+    {
+      "round_name": "Name the toy?",
+      "question": "Name this - Plastic giraffes, that are french and thus chic. It was mandatory to own atleast 3. Each costs $28.",
+      "solution": "Sophie",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the toy?",
+      "question": "Name this - Very uncool wheely-thing that allows you to transfer your baby from the car wherever you're going without waking him up, and is therefore the best.",
+      "solution": "Snap N Go",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the toy?",
+      "question": "Name this - A cloth bracelet, intended to be used as a tissue, when you don't have a tissue with you. As a bonus, it allows you to wear your child's boogers with pride.",
+      "solution": "Snozzie",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the ?",
+      "question": "Name this - Ergonomically designed resting area for a nursing baby, aka a pillow. Costs extra because its round.",
+      "solution": "Boppy",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the ?",
+      "question": "Name this - Baby cage, that requires three fully-grown adults and six trips to the computer to figure out how to assemble.",
+      "solution": "Pack N Play",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the ?",
+      "question": "Name this - Sling that you can hang on the door of a public bathroom, so that your baby has somewhere to chill, while you pee.",
+      "solution": "Baby Keeper Harness",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the ?",
+      "question": "Name this - Anatomically correct stuffed woman with removable baby and detachable placenta used to visually communicate to small children EXACTLY how the miracle of childbirth works.",
+      "solution": "Birth Doll",
+      "answer": "."
+    },
+    {
+      "round_name": "Name the ?",
+      "question": "Name this - Banana flavored air crackers that you will find crumbs of around your home for the rest of your life.",
+      "solution": "Mum Mums",
+      "answer": "."
+    }
+  ]
+}
