@@ -3,7 +3,7 @@ var gameSocket;
 
 const request = require("request");
 var Config = require('./public/config.json');
-var GameRounds = require("./game-2.json").rounds;
+var GameRounds = require("./game-3.json").rounds;
 // var GameRounds = require("./testgame.json").rounds;
 
 const NODE_ENV = process.env.NODE_ENV || 'dev';
